@@ -10,6 +10,13 @@ body {
 	font-family: -apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
 	transition: background 500ms ease;
 }
+body {
+    color: skyblue;
+    Font-family: helvetica;
+}
+.cursive {
+    font-family: cursive;
+}
 
 p, li {
 	font-size:  22px;
