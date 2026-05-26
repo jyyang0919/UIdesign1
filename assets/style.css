@@ -4,11 +4,13 @@ p {
 }
 
 @font-face {
-  font-family: 'bianzhidai_noBG-Bubble', 'bianzhidai_noBG-Ring'; 
+  font-family: 'bianzhidai_noBG-Bubble'; 
   src: url('bianzhidai_noBG-Bubble.otf') format('opentype');
+}
+@font-face {
+  font-family: 'bianzhidai_noBG-Ring';
   src: url('bianzhidai_noBG-Ring.otf') format('opentype');
 }
-
 * {
 	margin:  0px;
 	padding:  0px;
@@ -18,13 +20,11 @@ p {
 /* adjusting fonts */
 
 body {
+	color: black;
 	font-family: bianzhidai_noBG-Bubble, bianzhidai_noBG-Ring, terminal-grotesque, -apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
 	transition: background 500ms ease;
 }
-body {
-    color: black;
-    Font-family: helvetica;
-}
+
 .bianzhidai_noBG-Ring {
     font-family: bianzhidai_noBG-Ring;
 }
