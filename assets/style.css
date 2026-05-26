@@ -1,11 +1,11 @@
 
 p {
-  font-family: terminal-grotesque;
+  font-family: bianzhidai_noBG-Bubble;
 }
 
 @font-face {
-  font-family: 'terminal-grotesque';
-  src: url('terminal-grotesque.ttf') format('truetype');
+  font-family: 'bianzhidai_noBG-Bubble';
+  src: url('tbianzhidai_noBG-Bubble.otf') format('opentype');
 }
 
 * {
@@ -25,7 +25,7 @@ body {
     Font-family: helvetica;
 }
 .cursive {
-    font-family: terminal-grotesque;
+    font-family: bianzhidai_noBG-Bubble;
 }
 
 p, li {
