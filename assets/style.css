@@ -21,7 +21,7 @@ p {
 
 body {
 	color: black;
-	font-family: bianzhidai_noBG-Ring, terminal-grotesque, -apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
 	transition: background 500ms ease;
 }
 
