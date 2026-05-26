@@ -1,11 +1,12 @@
 
 p {
-  font-family: bianzhidai_noBG-Bubble;
+  font-family: bianzhidai_noBG-Bubble, bianzhidai_noBG-Ring;
 }
 
 @font-face {
-  font-family: 'bianzhidai_noBG-Bubble';
+  font-family: 'bianzhidai_noBG-Bubble', 'bianzhidai_noBG-Ring'; 
   src: url('bianzhidai_noBG-Bubble.otf') format('opentype');
+  src: url('bianzhidai_noBG-Ring.otf') format('opentype');
 }
 
 * {
