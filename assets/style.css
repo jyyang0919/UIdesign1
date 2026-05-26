@@ -1,3 +1,13 @@
+
+p {
+  font-family: terminal-grotesque;
+}
+
+@font-face {
+  font-family: 'terminal-grotesque';
+  src: url('terminal-grotesque.ttf') format('truetype');
+}
+
 * {
 	margin:  0px;
 	padding:  0px;
@@ -7,15 +17,15 @@
 /* adjusting fonts */
 
 body {
-	font-family: -apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
+	font-family: terminal-grotesque, -apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
 	transition: background 500ms ease;
 }
 body {
-    color: skyblue;
+    color: black;
     Font-family: helvetica;
 }
 .cursive {
-    font-family: cursive;
+    font-family: terminal-grotesque;
 }
 
 p, li {
