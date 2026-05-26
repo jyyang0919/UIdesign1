@@ -5,7 +5,7 @@ p {
 
 @font-face {
   font-family: 'bianzhidai_noBG-Bubble';
-  src: url('tbianzhidai_noBG-Bubble.otf') format('opentype');
+  src: url('bianzhidai_noBG-Bubble.otf') format('opentype');
 }
 
 * {
