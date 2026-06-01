@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>time to sleep but...</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #EAEAEA;
+      --text: #1a1a1a;
+      --muted: #888;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @font-face {
+      font-family: 'bianzhidai';
+      src: url('assets/bianzhidai_noBG-Ring.otf') format('opentype');
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      padding: 22px 36px 16px;
+    }
+
+    .logo {
+      font-family: 'bianzhidai', serif;
+      font-size: 22px;
+      white-space: nowrap;
+    }
+
+    .tagline {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 160px 1fr 200px;
+      min-height: 0;
+      padding: 0 36px;
+      gap: 0;
+    }
+
+    /* ── LEFT: CHANNELS ── */
+    .channel-nav {
+      padding-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .channel-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      padding: 3px 8px;
+      line-height: 1.4;
+      transition: opacity 0.15s;
+    }
+
+    .channel-btn:hover {
+      opacity: 0.5;
+    }
+
+    .channel-btn.active {
+      outline: 1px solid var(--text);
+      outline-offset: 0px;
+    }
+
+    /* ── CENTER: VIDEO ── */
+    .video-section {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 20px;
+      gap: 10px;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #c8c8c8;
+      overflow: hidden;
+    }
+
+    /* Block all interaction with the video */
+    .video-block {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+    }
+
+    /* Extend iframe beyond container to hide top/bottom chrome */
+    .video-wrapper iframe {
+      position: absolute;
+      top: -50px;
+      left: -2px;
+      width: calc(100% + 4px);
+      height: calc(100% + 100px);
+      border: none;
+      pointer-events: none;
+    }
+
+    .video-title {
+      font-family: 'Inter', sans-serif;
+      font-style: italic;
+      font-size: 13px;
+      color: var(--text);
+      text-align: right;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    /* ── RIGHT: GUESTBOOK ── */
+    .guestbook {
+      padding-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      overflow-y: auto;
+      align-items: flex-end;
+    }
+
+    .say-hi-btn {
+      font-family: 'Inter', sans-serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--text);
+      background: none;
+      border: 1px solid var(--text);
+      cursor: pointer;
+      text-align: center;
+      padding: 3px 10px;
+      margin-bottom: 20px;
+      letter-spacing: 0.01em;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+
+    .say-hi-btn:hover { opacity: 0.5; }
+
+    .log-group {
+      width: 100%;
+      margin-bottom: 14px;
+      text-align: right;
+    }
+
+    .log-date {
+      font-size: 12px;
+      color: var(--text);
+      margin-bottom: 5px;
+      letter-spacing: 0.03em;
+    }
+
+    .log-entry {
+      display: flex;
+      justify-content: flex-end;
+      align-items: baseline;
+      gap: 20px;
+      padding: 1px 0;
+    }
+
+    .log-hi {
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .log-time {
+      font-size: 12px;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      min-width: 36px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 16px 36px 20px;
+      display: flex;
+      gap: 36px;
+    }
+
+    .footer-btn {
+      font-family: 'bianzhidai', serif;
+      font-size: 20px;
+      color: var(--text);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .footer-btn:hover { opacity: 0.4; }
+
+    /* ── MODALS ── */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(234,234,234,0.88);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      max-width: 420px;
+      padding: 48px;
+      font-size: 13px;
+      line-height: 1.85;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: none; border: none;
+      font-size: 16px; cursor: pointer;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .modal h2 {
+      font-family: 'bianzhidai', serif;
+      font-size: 20px;
+      margin-bottom: 18px;
+      font-weight: normal;
+    }
+
+    .archive-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 16px;
+    }
+
+    .archive-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 9px 0;
+      gap: 24px;
+      font-size: 13px;
+    }
+
+    .archive-title { font-style: italic; }
+    .archive-channel { color: var(--muted); white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="logo">time to sleep but...</span>
+  <span class="tagline">videos so boring, you'll fall asleep immediately</span>
+</header>
+
+<div class="main">
+
+  <!-- LEFT -->
+  <nav class="channel-nav">
+    <button class="channel-btn active" data-channel="science">science</button>
+    <button class="channel-btn" data-channel="history">history</button>
+    <button class="channel-btn" data-channel="nature">nature</button>
+    <button class="channel-btn" data-channel="philosophy">philosophy</button>
+  </nav>
+
+  <!-- CENTER -->
+  <section class="video-section">
+    <div class="video-wrapper">
+      <div class="video-block"></div>
+      <iframe id="yt-player"
+        src=""
+        allow="autoplay; encrypted-media"
+        referrerpolicy="strict-origin-when-cross-origin">
+      </iframe>
+    </div>
+    <p class="video-title" id="video-title"></p>
+  </section>
+
+  <!-- RIGHT -->
+  <aside class="guestbook">
+    <button class="say-hi-btn" id="say-hi-btn">say hi !</button>
+    <div id="log-container" style="width:100%"></div>
+  </aside>
+
+</div>
+
+<footer>
+  <button class="footer-btn" id="about-btn">About</button>
+  <button class="footer-btn" id="archive-btn">Archive</button>
+</footer>
+
+<!-- ABOUT MODAL -->
+<div class="modal-backdrop" id="about-modal">
+  <div class="modal">
+    <button class="modal-close" data-close="about-modal">✕</button>
+    <h2>About</h2>
+    <p>
+      <em>time to sleep but...</em> is a place for people who can't seem to fall asleep.<br><br>
+      We stream non-stop documentaries about science, history, nature, and philosophy —
+      the kind of content that's just interesting enough to keep you from anxious thoughts,
+      and just slow enough to carry you gently to sleep.<br><br>
+      You can't pause. You can't rewind. That's the point.
+    </p>
+  </div>
+</div>
+
+<!-- ARCHIVE MODAL -->
+<div class="modal-backdrop" id="archive-modal">
+  <div class="modal" style="max-width:500px">
+    <button class="modal-close" data-close="archive-modal">✕</button>
+    <h2>Archive</h2>
+    <div class="archive-list" id="archive-list"></div>
+  </div>
+</div>
+
+<!-- YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+
+// ── CHANNEL DATA ──
+// IDs verified from search — embed-friendly channels only
+// (Free Documentary Space, Odyssey, History Channel official, TED-Ed)
+const channels = {
+  science: {
+    queue: [
+      { id: 'J4rZpyqNHjI', title: 'Decoding the Universe | Free Documentary Space' },
+      { id: 'foSSrf5LiMg', title: 'The Expanding Universe | Beyond Our Earth' },
+      { id: 'paiQ0BDcvEg', title: 'How Telescopes Revealed the Universe' },
+      { id: 'UySJY1ZaRDM', title: 'Hubble Deep Field: The True Scale of the Cosmos' },
+    ]
+  },
+  history: {
+    queue: [
+      { id: 'P3IIRiSTc3g', title: 'The Complete History of the Roman Empire in 4 Hours' },
+      { id: 'e0yFgmqC9xM', title: 'The Entire History of Ancient Egypt | Full Docuseries' },
+      { id: '9cdUxZuarL0', title: 'Discover the Secrets of Ancient Egypt | Engineering an Empire' },
+      { id: 'L0p05SN9okw', title: 'The Complete History of Roman Egypt Until 395 AD' },
+    ]
+  },
+  nature: {
+    queue: [
+      { id: 'u-dEnJpCGAQ', title: 'Wildlife — The Fascinating World of Wild Animals | Full Series' },
+      { id: 'M2Eka0RA7Rw', title: 'Ocean Stories | Full Series | Free Documentary Nature' },
+      { id: 'z2g57RQTKpE', title: 'Changing Seas — Our Oceans in Peril | Full Season' },
+      { id: 'edPQo7UFysw', title: 'The Wild Pacific — Gigantic Ocean Teeming With Life' },
+    ]
+  },
+  philosophy: {
+    queue: [
+      { id: '9HBCQSMSWzA', title: 'The Philosophy of Stoicism | Mini Documentary' },
+      { id: 'R9OCA6UFE-0', title: 'The Philosophy of Stoicism — TED-Ed' },
+      { id: '0ACilekZUrw', title: 'Everything You Need To Know About Stoicism' },
+      { id: 'ggkd_uyDqz8', title: 'Stoicism: An In-Depth Explanation' },
+    ]
+  }
+};
+
+// ── STATE ──
+let currentChannel = 'science';
+let currentIndex = 0;
+let player = null;
+let playerReady = false;
+
+// ── YOUTUBE API ──
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('yt-player', {
+    height: '100%',
+    width: '100%',
+    videoId: channels[currentChannel].queue[0].id,
+    playerVars: {
+      autoplay: 1,
+      controls: 0,
+      disablekb: 1,
+      rel: 0,
+      modestbranding: 1,
+      iv_load_policy: 3,
+      fs: 0,
+      playsinline: 1,
+    },
+    events: {
+      onReady: onPlayerReady,
+      onStateChange: onPlayerStateChange,
+    }
+  });
+}
+
+function onPlayerReady(event) {
+  playerReady = true;
+  event.target.setVolume(40);
+  event.target.playVideo();
+  updateTitle();
+}
+
+function onPlayerStateChange(event) {
+  // 0 = ended → play next
+  if (event.data === YT.PlayerState.ENDED) {
+    nextVideo();
+  }
+}
+
+function updateTitle() {
+  const q = channels[currentChannel].queue;
+  document.getElementById('video-title').textContent = q[currentIndex % q.length].title;
+}
+
+function playVideo(channel, index) {
+  currentChannel = channel;
+  currentIndex = index;
+  const q = channels[channel].queue;
+  const video = q[index % q.length];
+  if (playerReady && player) {
+    player.loadVideoById(video.id);
+    player.playVideo();
+  }
+  updateTitle();
+}
+
+function nextVideo() {
+  const q = channels[currentChannel].queue;
+  currentIndex = (currentIndex + 1) % q.length;
+  playVideo(currentChannel, currentIndex);
+}
+
+// Channel buttons
+document.querySelectorAll('.channel-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    playVideo(btn.dataset.channel, 0);
+  });
+});
+
+// ── GUESTBOOK ──
+const STORAGE_KEY = 'ttsb_log_v2';
+
+function loadLog() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveLog(log) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(log));
+}
+
+function fmt(ts, type) {
+  const d = new Date(ts);
+  if (type === 'date') {
+    const yy = String(d.getFullYear()).slice(2);
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    return `${yy}/${mm}/${dd}`;
+  }
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+function renderLog() {
+  const log = loadLog();
+  const container = document.getElementById('log-container');
+  container.innerHTML = '';
+
+  const groups = {};
+  log.forEach(e => {
+    const k = fmt(e.ts, 'date');
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(e);
+  });
+
+  Object.entries(groups).reverse().forEach(([date, entries]) => {
+    const g = document.createElement('div');
+    g.className = 'log-group';
+
+    const dEl = document.createElement('div');
+    dEl.className = 'log-date';
+    dEl.textContent = date;
+    g.appendChild(dEl);
+
+    entries.slice().reverse().forEach(entry => {
+      const row = document.createElement('div');
+      row.className = 'log-entry';
+      row.innerHTML = `<span class="log-hi">hi</span><span class="log-time">${fmt(entry.ts, 'time')}</span>`;
+      g.appendChild(row);
+    });
+
+    container.appendChild(g);
+  });
+}
+
+document.getElementById('say-hi-btn').addEventListener('click', () => {
+  const log = loadLog();
+  log.push({ ts: Date.now() });
+  saveLog(log);
+  renderLog();
+});
+
+renderLog();
+
+// ── ARCHIVE ──
+const archiveItems = [
+  { title: '우주의 탄생 2시간 몰아보기', channel: 'science' },
+  { title: 'How the Universe Works', channel: 'science' },
+  { title: 'The Fall of Civilizations — Ancient Rome', channel: 'history' },
+  { title: 'Ancient Egypt — History of a Civilization', channel: 'history' },
+  { title: 'Planet Earth II (BBC)', channel: 'nature' },
+  { title: 'Blue Planet — Deep Ocean', channel: 'nature' },
+  { title: 'The History of Philosophy', channel: 'philosophy' },
+  { title: 'Stoicism — How to Build a Meaningful Life', channel: 'philosophy' },
+];
+
+const archiveList = document.getElementById('archive-list');
+archiveItems.forEach(item => {
+  const el = document.createElement('div');
+  el.className = 'archive-item';
+  el.innerHTML = `<span class="archive-title">${item.title}</span><span class="archive-channel">${item.channel}</span>`;
+  archiveList.appendChild(el);
+});
+
+// ── MODALS ──
+document.getElementById('about-btn').addEventListener('click', () =>
+  document.getElementById('about-modal').classList.add('open'));
+document.getElementById('archive-btn').addEventListener('click', () =>
+  document.getElementById('archive-modal').classList.add('open'));
+
+document.querySelectorAll('[data-close]').forEach(btn => {
+  btn.addEventListener('click', () =>
+    document.getElementById(btn.dataset.close).classList.remove('open'));
+});
+
+document.querySelectorAll('.modal-backdrop').forEach(bd => {
+  bd.addEventListener('click', e => { if (e.target === bd) bd.classList.remove('open'); });
+});
+
+</script>
+</body>
+</html>
