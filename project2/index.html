@@ -113,6 +113,7 @@
       position: absolute;
       inset: 0;
       z-index: 10;
+      cursor: pointer;
     }
 
     /* Extend iframe beyond container to hide top/bottom chrome */
@@ -292,12 +293,12 @@
   <!-- CENTER -->
   <section class="video-section">
     <div class="video-wrapper">
-      <div class="video-block"></div>
-      <iframe id="yt-player"
-        src=""
-        allow="autoplay; encrypted-media"
-        referrerpolicy="strict-origin-when-cross-origin">
-      </iframe>
+      <video id="main-player"
+        style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;"
+        autoplay
+        muted
+        playsinline>
+      </video>
     </div>
     <p class="video-title" id="video-title"></p>
   </section>
@@ -339,122 +340,60 @@
   </div>
 </div>
 
-<!-- YouTube IFrame API -->
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
 
 // ── CHANNEL DATA ──
-// IDs verified from search — embed-friendly channels only
-// (Free Documentary Space, Odyssey, History Channel official, TED-Ed)
+// Place your mp4 files in assets/ with these exact filenames
 const channels = {
   science: {
-    queue: [
-      { id: 'J4rZpyqNHjI', title: 'Decoding the Universe | Free Documentary Space' },
-      { id: 'foSSrf5LiMg', title: 'The Expanding Universe | Beyond Our Earth' },
-      { id: 'paiQ0BDcvEg', title: 'How Telescopes Revealed the Universe' },
-      { id: 'UySJY1ZaRDM', title: 'Hubble Deep Field: The True Scale of the Cosmos' },
-    ]
+    src: 'assets/science.mp4',
+    title: '우주의 탄생 2시간 몰아보기'
   },
   history: {
-    queue: [
-      { id: 'P3IIRiSTc3g', title: 'The Complete History of the Roman Empire in 4 Hours' },
-      { id: 'e0yFgmqC9xM', title: 'The Entire History of Ancient Egypt | Full Docuseries' },
-      { id: '9cdUxZuarL0', title: 'Discover the Secrets of Ancient Egypt | Engineering an Empire' },
-      { id: 'L0p05SN9okw', title: 'The Complete History of Roman Egypt Until 395 AD' },
-    ]
+    src: 'assets/history.mp4',
+    title: 'The Fall of Civilizations — Ancient History'
   },
   nature: {
-    queue: [
-      { id: 'u-dEnJpCGAQ', title: 'Wildlife — The Fascinating World of Wild Animals | Full Series' },
-      { id: 'M2Eka0RA7Rw', title: 'Ocean Stories | Full Series | Free Documentary Nature' },
-      { id: 'z2g57RQTKpE', title: 'Changing Seas — Our Oceans in Peril | Full Season' },
-      { id: 'edPQo7UFysw', title: 'The Wild Pacific — Gigantic Ocean Teeming With Life' },
-    ]
+    src: 'assets/nature.mp4',
+    title: 'Planet Earth — The Natural World'
   },
   philosophy: {
-    queue: [
-      { id: '9HBCQSMSWzA', title: 'The Philosophy of Stoicism | Mini Documentary' },
-      { id: 'R9OCA6UFE-0', title: 'The Philosophy of Stoicism — TED-Ed' },
-      { id: '0ACilekZUrw', title: 'Everything You Need To Know About Stoicism' },
-      { id: 'ggkd_uyDqz8', title: 'Stoicism: An In-Depth Explanation' },
-    ]
+    src: 'assets/philosophy.mp4',
+    title: 'The Philosophy of Stoicism'
   }
 };
 
 // ── STATE ──
 let currentChannel = 'science';
-let currentIndex = 0;
-let player = null;
-let playerReady = false;
+const player = document.getElementById('main-player');
+const titleEl = document.getElementById('video-title');
 
-// ── YOUTUBE API ──
-function onYouTubeIframeAPIReady() {
-  player = new YT.Player('yt-player', {
-    height: '100%',
-    width: '100%',
-    videoId: channels[currentChannel].queue[0].id,
-    playerVars: {
-      autoplay: 1,
-      controls: 0,
-      disablekb: 1,
-      rel: 0,
-      modestbranding: 1,
-      iv_load_policy: 3,
-      fs: 0,
-      playsinline: 1,
-    },
-    events: {
-      onReady: onPlayerReady,
-      onStateChange: onPlayerStateChange,
-    }
+function loadChannel(channel) {
+  currentChannel = channel;
+  const ch = channels[channel];
+  player.src = ch.src;
+  player.load();
+  player.play().catch(() => {});
+  titleEl.textContent = ch.title;
+
+  document.querySelectorAll('.channel-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.channel === channel);
   });
 }
 
-function onPlayerReady(event) {
-  playerReady = true;
-  event.target.setVolume(40);
-  event.target.playVideo();
-  updateTitle();
-}
-
-function onPlayerStateChange(event) {
-  // 0 = ended → play next
-  if (event.data === YT.PlayerState.ENDED) {
-    nextVideo();
-  }
-}
-
-function updateTitle() {
-  const q = channels[currentChannel].queue;
-  document.getElementById('video-title').textContent = q[currentIndex % q.length].title;
-}
-
-function playVideo(channel, index) {
-  currentChannel = channel;
-  currentIndex = index;
-  const q = channels[channel].queue;
-  const video = q[index % q.length];
-  if (playerReady && player) {
-    player.loadVideoById(video.id);
-    player.playVideo();
-  }
-  updateTitle();
-}
-
-function nextVideo() {
-  const q = channels[currentChannel].queue;
-  currentIndex = (currentIndex + 1) % q.length;
-  playVideo(currentChannel, currentIndex);
-}
+// Loop: when video ends, restart same channel (논스톱)
+player.addEventListener('ended', () => {
+  player.currentTime = 0;
+  player.play().catch(() => {});
+});
 
 // Channel buttons
 document.querySelectorAll('.channel-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    playVideo(btn.dataset.channel, 0);
-  });
+  btn.addEventListener('click', () => loadChannel(btn.dataset.channel));
 });
+
+// Init
+loadChannel('science');
 
 // ── GUESTBOOK ──
 const STORAGE_KEY = 'ttsb_log_v2';
@@ -522,14 +461,10 @@ renderLog();
 
 // ── ARCHIVE ──
 const archiveItems = [
-  
-  { title: 'How the Universe Works', channel: 'science' },
-  { title: 'The Fall of Civilizations — Ancient Rome', channel: 'history' },
-  { title: 'Ancient Egypt — History of a Civilization', channel: 'history' },
-  { title: 'Planet Earth II (BBC)', channel: 'nature' },
-  { title: 'Blue Planet — Deep Ocean', channel: 'nature' },
-  { title: 'The History of Philosophy', channel: 'philosophy' },
-  { title: 'Stoicism — How to Build a Meaningful Life', channel: 'philosophy' },
+  { title: '우주의 탄생 2시간 몰아보기', channel: 'science' },
+  { title: 'The Fall of Civilizations', channel: 'history' },
+  { title: 'Planet Earth — The Natural World', channel: 'nature' },
+  { title: 'The Philosophy of Stoicism', channel: 'philosophy' },
 ];
 
 const archiveList = document.getElementById('archive-list');
